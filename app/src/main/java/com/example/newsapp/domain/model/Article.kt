@@ -1,12 +1,19 @@
 package com.example.newsapp.domain.model
 
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+@Entity // for Room DB
 data class Article(
-    val author: String,
+    val author: String?,
     val content: String,
     val description: String,
     val publishedAt: String,
     val source: Source,
     val title: String,
-    val url: String,
+    @PrimaryKey val url: String, // here, we make the URL as the primary key
     val urlToImage: String
-)
+): Parcelable

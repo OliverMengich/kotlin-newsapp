@@ -26,6 +26,8 @@ import com.example.newsapp.presentation.onboarding.components.OnBoardingPage
 import com.example.newsapp.presentation.onboarding.components.PageIndicator
 import kotlinx.coroutines.launch
 
+
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnBoardingScreen(
@@ -73,7 +75,7 @@ fun OnBoardingScreen(
                 }
                 NewsButton(text = buttonState.value[1]) {
                     scope.launch {
-                        if (pagerState.currentPage=== 2){
+                        if (pagerState.currentPage == 2){
                             event(OnBoardingEvent.SaveAppEntry)
                         }else{
                             pagerState.animateScrollToPage(
