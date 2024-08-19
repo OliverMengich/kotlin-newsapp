@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,13 +33,14 @@ fun ArticlesList(
         contentPadding = PaddingValues(all = ExtraSmallPadding2)
     ) {
         items(count = articles.size){
-            val article = articles[it]
-            ArticleCard(
-                article = article,
-                onClick = {
-                    onClick(article)
-                }
-            )
+            articles[it].let { article ->
+                ArticleCard(
+                    article = article,
+                    onClick = {
+                        onClick(article)
+                    }
+                )
+            }
         }
     }
 }
@@ -87,11 +89,13 @@ fun handlePagingResult(
             false
         }
         error !=null ->{
-            EmptyScreen()
+            EmptyScreen(
+                error = error
+            )
             false
         }
 
-        articles.itemCount===0 ->{
+        articles.itemCount ==0 ->{
             EmptyScreen()
             false
         }

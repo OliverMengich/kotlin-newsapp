@@ -89,13 +89,14 @@ fun NewsNavigator(modifier: Modifier = Modifier) {
     ) {
         val bottomPadding = it.calculateBottomPadding()
         NavHost(
-            modifier = Modifier.padding(bottomPadding), //padding will be height of news bottom navigation
+            modifier = Modifier.padding(bottom=bottomPadding), //padding will be height of news bottom navigation
             navController = navController,
             startDestination = Route.HomeScreen.route,
         ){
             composable(route = Route.HomeScreen.route){
                 val viewModel: HomeViewModel = hiltViewModel()
                 val articles = viewModel.news.collectAsLazyPagingItems()
+                val state by viewModel.state
                 HomeScreen(
                     articles = articles,
                     navigateToSearch = {
@@ -107,13 +108,16 @@ fun NewsNavigator(modifier: Modifier = Modifier) {
                             article = article
                         )
                     },
-                    event = viewModel::onEvent,
-                    state = viewModel.state.value
+                    event = { event ->
+                        viewModel.onEvent(event)
+                    },
+                    state = state
                 )
             }
             composable(route = Route.SearchScreen.route){
                 val viewModel: SearchViewModel = hiltViewModel()
                 val state = viewModel.state.value
+
                 SearchScreen(
                     state = state,
                     event = viewModel::onEvent,
@@ -124,7 +128,6 @@ fun NewsNavigator(modifier: Modifier = Modifier) {
             }
             composable(route = Route.DetailsScreen.route){
                 val viewModel: DetailsViewModel = hiltViewModel()
-                //TODO: Handle side effect
                 if (viewModel.sideEffect !==null){
                     //1. show toast message
                     Toast.makeText(LocalContext.current, viewModel.sideEffect, Toast.LENGTH_SHORT).show() //show toast message
@@ -132,16 +135,20 @@ fun NewsNavigator(modifier: Modifier = Modifier) {
                     viewModel.onEvent(DetailsEvent.RemoveSideEvent)
                 }
                 navController.previousBackStackEntry?.savedStateHandle?.get<Article?>("article")?.let { artc ->
-                    DetailsScreen(article = artc, event = viewModel::onEvent) {
-                        navController.navigateUp()
-                    }
+                    DetailsScreen(
+                        article = artc,
+                        event = viewModel::onEvent,
+                        navigateUp = {
+                            navController.navigateUp()
+                        }
+                    )
                 }
             }
             composable(route = Route.BookmarkScreen.route){
                 val viewModel: BookmarkViewmodel = hiltViewModel()
                 val state = viewModel.state.value
                 BookmarkScreen(state = state) { art ->
-                    navigateToDetails(navController,art)
+                    navigateToDetails(navController=navController, article = art)
                 }
             }
         }

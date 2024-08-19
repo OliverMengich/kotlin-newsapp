@@ -1,5 +1,6 @@
 package com.example.newsapp.presentation.home
 
+import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
@@ -54,10 +55,11 @@ fun HomeScreen(
             }
         }
     }
+    Log.d("total articles","${articles.itemCount}")
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(top = MediumPadding1)
-//        .statusBarsPadding()
+        .statusBarsPadding()
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_logo),
@@ -67,7 +69,7 @@ fun HomeScreen(
                 .height(30.dp)
                 .padding(horizontal = MediumPadding1)
         )
-        val scrollState = rememberScrollState(initial = state.scrollValue)
+
         Spacer(modifier = Modifier.height(MediumPadding1))
         SearchBar(
             modifier = Modifier.padding(horizontal = MediumPadding1),
@@ -89,15 +91,7 @@ fun HomeScreen(
             fontSize = 12.sp,
             color = colorResource(id = R.color.placeholder),
         )
-        // Update the maxScrollingValue
-        LaunchedEffect(key1 = scrollState.maxValue) {
-            event(HomeEvent.UpdateMaxScrollingValue(scrollState.maxValue))
-        }
-        // Save the state of the scrolling position
-        LaunchedEffect(key1 = scrollState.value) {
-            event(HomeEvent.UpdateScrollValue(scrollState.value))
-        }
-        // Animate the scrolling
+        val scrollState = rememberScrollState(initial = state.scrollValue)
         LaunchedEffect(key1 = state.maxScrollingValue) {
             delay(500)
             if (state.maxScrollingValue > 0) {
@@ -113,13 +107,22 @@ fun HomeScreen(
                 )
             }
         }
+        // Update the maxScrollingValue
+        LaunchedEffect(key1 = scrollState.maxValue) {
+            event(HomeEvent.UpdateMaxScrollingValue(scrollState.maxValue))
+        }
+        // Save the state of the scrolling position
+        LaunchedEffect(key1 = scrollState.value) {
+            event(HomeEvent.UpdateScrollValue(scrollState.value))
+        }
+        // Animate the scrolling
+
         Spacer(modifier = Modifier.height(MediumPadding1))
         ArticlesList(
             articles = articles,
-            modifier = Modifier.padding(horizontal = MediumPadding1)
-        ) {
-            navigateToDetails(it)
-        }
+            modifier = Modifier.padding(horizontal = MediumPadding1),
+            onClick = navigateToDetails
+        )
 
     }
 }
